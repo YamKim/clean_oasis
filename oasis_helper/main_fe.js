@@ -22,8 +22,8 @@ app.get('*', function(request, response, next){
 /*
 var db = mysql.createConnection({
   host:'localhost',
-  user:'nodejs',
-  password:'1111',
+  user:'root',
+  password:'5933',
   database:'42_oasis'
 });
 db.connect();
@@ -32,7 +32,7 @@ pathList = [];
 
 db.query(`select * from beverage`, function(error, topics){
   if (error) console.log(error);
-  for (let i = 0; i < topics.length; i++)
+  for (var i = 0; i < topics.length; i++)
     pathList.push(topics[i]);
 }); 
 */
@@ -61,20 +61,25 @@ app.get('/beverage', function(request, response) {
 });
 
 app.get('/register', function(request, response) {
-  //var cssPath = "/stylesheets/register_style.css";
-  //var body = template.register(cssPath, "button");
+  var cssPath = "/stylesheets/register_style.css";
+  var body = template.register(cssPath);
+  /*
   var body = `
   <form action="/register_process" method="post">
+   
     <select class="category" name="category">
       <option name="beverage" value="1">음료</option>
       <option name="snack" value="2">간식</option>
       <option name="etc" value="3">비품</option>
     </select>
+    <p><button id='button1'> <a href=/beverage>음료</a> </button></p>
     <p><input type="text" name="intraId" placeholder="intra ID"></p>
     <p><textarea name="message" placeholder="message"></textarea></p>
-    <p><input type="submit"></p>
+    <p><input type="submit" value="등록"></p>
+    <p><input type="submit" value="취소"></p>
   </form>
   `;
+  */
   
   var html = template.html(
     "",
@@ -92,6 +97,19 @@ app.post('/register_process', function(request, response){
   response.redirect(`/register`);
   response.end();
 });
+
+/*
+$('#button1').click(function(){
+  console.log('button clicked');
+  $.ajax({url: 'test1', success:function(res){
+      console.log('server response is', res);
+  }});
+});
+
+app.get("/test1", function (request, response) {
+  response.send('ok');
+});
+*/
 
 app.listen(3000, function() {
   console.log('Example app listening on port 3000!')

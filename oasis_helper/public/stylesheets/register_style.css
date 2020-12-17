@@ -2,7 +2,7 @@
   display: grid;
   width: 700px;
   height: 300px;
-  grid-template-rows: 1fr 20fr 1fr;
+  grid-template-rows: 1fr 20fr;
   grid-gap: 5px;
   grid-auto-rows: minmax(50px, auto);
   background-color: #fff;
@@ -23,27 +23,67 @@
 
 .body {
   display: grid;
-  grid-template-columns: 2fr 8fr 1fr 3fr 2fr;
+  grid-template-columns: 1fr 1fr;
   grid-gap: 5px;
   grid-auto-rows: minmax(200px, auto);
-  background-color: yellow;
+  border-top: 2px solid black;
+  border-bottom: 2px solid black;
+  border-left: 2px solid black;
+  border-right: 2px solid black;
+}
+
+.box:nth-child(1) {
+  display: grid;
+  background-color: orange;
+  text-align: center;
+  margin: 5%;
+  grid-template-rows: 8fr 2fr;
 }
 
 .box:nth-child(2) {
   display: grid;
-  place-content: center space-evenly;
   background-color: orange;
-  grid-template-rows: 8fr 2fr;
+  text-align: center;
+  margin: 5%;
+  grid-template-rows: repeat(5, 1fr);
 }
 
-.box:nth-child(4) {
+.cell:nth-child(1) {
   display: grid;
-  place-content: center space-evenly;
-  grid-template-rows: repeat(8, 1fr);
+  text-align: center;
+  align-self: center;
+  background-color: skyblue;
+  grid-template-columns: repeat(3, 1fr);
 }
 
-.tail {
+.cell:nth-child(2) {
+  display: grid;
+  place-content: center;
+  text-align: center;
+  align-self: stretch;
+}
+
+.cell:nth-child(3) {
+  display: grid;
+  place-self: cebter;
+  background-color: skyblue;
+  text-align: center;
+  column-gap: 5%;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.cell:nth-child(4) {
+  display: grid;
+  place-content: space-evenly;
+  text-align: center;
+  background-color: skyblue;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.cell:nth-child(5) {
   display: grid;
   place-content: center space-evenly;
-  background-color: yellow;
+  align-self: stretch;
+  background-color: yellowgreen;
+  grid-template-columns: repeat(2, 1fr);
 }
