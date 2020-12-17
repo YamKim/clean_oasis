@@ -19,7 +19,6 @@ app.get('*', function(request, response, next){
   });
 });
 
-
 var db = mysql.createConnection({
   host:'localhost',
   user:'nodejs',
@@ -69,7 +68,7 @@ app.get('/register', function(request, response) {
   );
   response.send(html);
 })
- 
+
 app.listen(3000, function() {
   console.log('Example app listening on port 3000!')
 });
