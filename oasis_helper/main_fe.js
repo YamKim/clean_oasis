@@ -50,14 +50,8 @@ app.get('/', function(request, response) {
 app.get('/beverage', function(request, response) { 
   //var cssPath = "/stylesheets/register_style.css";
   //var body = template.grid(cssPath, button);
-  var body = `
-  <form action="/beverage">
-    <input type="text">
-    <input type="submit" value="전송">
-    <input type="button" value="버튼" onclick="console.log(5)">
-    <input type="reset">
-  </form>
-  `
+  var cssPath = "/stylesheets/album_style.css";
+  body = template.album(3, cssPath);
   var html = template.html(
     "",
     body,
