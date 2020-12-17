@@ -29,7 +29,7 @@ module.exports = {
             <div></div>
         </div>
         <div class="category">
-            <div><a href="register">등록</a></div>
+            <div><a href=/register>등록</a></div>
         </div>
       </div>
       <div>
@@ -55,7 +55,7 @@ module.exports = {
               <div></div>
           </div>
           <div class="category">
-              <div><a href=/"register">등록</a></div>
+              <div><a href=/register>등록</a></div>
           </div>
         </div>
         <div class="body">
@@ -115,7 +115,7 @@ module.exports = {
               <div></div>
           </div>
           <div class="category">
-              <div><a href="register">등록</a></div>
+              <div><a href=/register>등록</a></div>
           </div>
         </div>
         <div class="body">
@@ -172,7 +172,7 @@ module.exports = {
               <div></div>
           </div>
           <div class="category">
-              <div><a href="register">등록</a></div>
+              <div><a href="/register">등록</a></div>
           </div>
         </div>
         <div class="body">
