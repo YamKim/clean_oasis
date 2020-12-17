@@ -9,5 +9,11 @@
 .cell {
   display: grid;
   place-content: center space-evenly;
-  grid-template-rows: 1fr 5fr;
+  grid-template-rows: 1fr 3fr 1fr;
 }
+/*
+.cell:nth-child(3) {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+*/

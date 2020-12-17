@@ -29,14 +29,10 @@ db.connect();
 
 pathList = [];
 
-db.query(`select intra_id from beverage`, function(error, topics){
-  if (error) {
-    console.log(error);
-  }
-  var cnt = Object.keys(topics).length;
-  for (let i = 0; i < cnt; i++)
-    pathList.push(`/images/${topics[i].intra_id}.png`);
-  console.log(pathList);
+db.query(`select * from beverage`, function(error, topics){
+  if (error) console.log(error);
+  for (let i = 0; i < topics.length; i++)
+    pathList.push(topics[i]);
 }); 
 
 app.get('/', function(request, response) { 
@@ -45,9 +41,8 @@ app.get('/', function(request, response) {
   //var html = template.html("", body, "");
   for (let i = 0; i < pathList.length; i++) {
     var body = `
-    <img src=${pathList[i]}>
+    <img src=/images/${pathList[i].intra_id}.png>
     `
-    
     var html = template.html(
       "",
       body,

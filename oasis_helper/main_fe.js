@@ -19,7 +19,7 @@ app.get('*', function(request, response, next){
   });
 });
 
-/*
+
 var db = mysql.createConnection({
   host:'localhost',
   user:'nodejs',
@@ -35,7 +35,6 @@ db.query(`select * from beverage`, function(error, topics){
   for (let i = 0; i < topics.length; i++)
     pathList.push(topics[i]);
 }); 
-*/
 
 app.get('/', function(request, response) { 
   var cssPath = "/stylesheets/info_style.css";
@@ -49,12 +48,9 @@ app.get('/', function(request, response) {
   response.send(html);
 });
 
-app.get('/beverage', function(request, response) { 
-  //var cssPath = "/stylesheets/register_style.css";
-  //var body = template.grid(cssPath, button);
+app.get('/beverage', function(request, response) {
   var cssPath = "/stylesheets/album_style.css";
-  //body = template.album(pathList.length, pathList, cssPath);
-  body = "";
+  var body = template.album(pathList.length, pathList, cssPath);
   var html = template.html(
     "",
     body,

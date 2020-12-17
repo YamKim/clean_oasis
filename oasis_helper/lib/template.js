@@ -4,15 +4,15 @@ module.exports = {
       `
       <!doctype html>
       <html>
-      <head>
-        ${head}
-      </head>
-      <body>
-        ${body}
-      </body>
-      <tail>
-        ${tail}
-      </tail>
+        <head>
+          ${head}
+        </head>
+        <body>
+          ${body}
+        </body>
+        <tail>
+          ${tail}
+        </tail>
       </html>
       `;
     return (ret);
@@ -96,7 +96,7 @@ module.exports = {
       rowNum /= 4 + 1;
     var k = -1;
     var j = -1;
-    const colNum = 4
+    const colNum = 4;
     var ret = `<link rel="stylesheet" href=${cssPath}>`;
     while (++j < rowNum) {
       ret += `<div class="body">`;
@@ -104,10 +104,10 @@ module.exports = {
       while (++i < colNum) {
         var intraId = data[++k].intra_id;
         var imgPath = `<img src = /images/${data[k].intra_id}.png width=100px height=100px>`;
-        ret += `<div class="cell">`; 
-          ret += `<div>${intraId}</div>`;
-          ret += `<div>${imgPath}</div>`;
-        ret += "</div>"; 
+        ret += `<div class="cell">`
+        ret += `<div>${intraId}</div>`;
+        ret += `<div>${imgPath}</div>`;
+        ret += `</div>`; 
       }
       ret += `</div>`;
     }
