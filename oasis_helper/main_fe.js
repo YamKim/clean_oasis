@@ -49,6 +49,35 @@ app.get('/', function(request, response) {
   response.send(html);
 });
 
+function insertDB(category, intraId, message) {
+  if (category == 1) {
+    db.query(`insert into beverage(intra_id, register_time, alarm_time) values(` + db.escape(intraId) + `, now(), now())`, function(error){
+      if (error) console.log(error);
+    });
+  }
+  else if (category == 2) {
+    db.query(`insert into snack(intra_id, register_time, message, alarm_check) values(` + db.escape(intraId) + `, now(), `+ db.escape(message) + `, 1)`, function(error){
+      if (error) console.log(error);
+    });
+  }
+  else if (category == 3) {
+    db.query(`insert into needs(intra_id, register_time, message, alarm_check) values(` + db.escape(intraId) + `, now(), `+ db.escape(message) + `, 1)`, function(error){
+      if (error) console.log(error);
+    });
+  }
+}
+
+app.post('/register_process', function(request, response){
+  var category = request.body.category;
+  var intraId = request.body.intraId;
+  var message = request.body.message;
+  console.log(category, intraId, message);
+  insertDB(category, intraId, message);
+ 
+  response.redirect(`/register`);
+  response.end();
+});
+
 app.get('/beverage', function(request, response) {
   var cssPath = "/stylesheets/album_style.css";
   var body = template.album(pathList.length, pathList, cssPath);
