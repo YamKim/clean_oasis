@@ -16,7 +16,7 @@
 
 .category:nth-child(1) {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: repeat(4, 1fr);
 }
 
 .body {
@@ -30,7 +30,7 @@
 .box:nth-child(2) {
   display: grid;
   background-color: orange;
-  grid-template-rows: repeat(8, 1fr);
+  grid-template-rows: 8fr 2fr;
 }
 
 .box:nth-child(4) {

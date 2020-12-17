@@ -19,6 +19,7 @@ app.get('*', function(request, response, next){
   });
 });
 
+/*
 var db = mysql.createConnection({
   host:'localhost',
   user:'nodejs',
@@ -32,12 +33,31 @@ db.query(`SELECT title FROM topic where id = 2`, function(error, topics){
   imgPath += ".png";
 }); 
 console.log(imgPath);
+*/
 
 app.get('/', function(request, response) { 
-  //var cssPath = "/stylesheets/style.css";
-  var body = template.grid(cssPath);
+  var cssPath = "/stylesheets/info_style.css";
+  var body = template.info(cssPath, "/images/info.png");
   //var html = template.html("", body, "");
+  var html = template.html(
+    "",
+    body,
+    ""
+  );
+  response.send(html);
+});
 
+app.get('/beverage', function(request, response) { 
+  //var cssPath = "/stylesheets/register_style.css";
+  //var body = template.grid(cssPath, button);
+  var body = `
+  <form action="/beverage">
+    <input type="text">
+    <input type="submit" value="전송">
+    <input type="button" value="버튼" onclick="console.log(5)">
+    <input type="reset">
+  </form>
+  `
   var html = template.html(
     "",
     body,
