@@ -23,29 +23,37 @@ var db = mysql.createConnection({
   host:'localhost',
   user:'nodejs',
   password:'1111',
-  database:'opentutorials'
+  database:'42_oasis'
 });
 db.connect();
-var imgPath = "/images/";
-db.query(`SELECT title FROM topic where id = 2`, function(error, topics){
-  imgPath += topics[0].title
-  imgPath += ".png";
+
+pathList = [];
+
+db.query(`select intra_id from beverage`, function(error, topics){
+  if (error) {
+    console.log(error);
+  }
+  var cnt = Object.keys(topics).length;
+  for (let i = 0; i < cnt; i++)
+    pathList.push(`/images/${topics[i].intra_id}.png`);
+  console.log(pathList);
 }); 
-console.log(imgPath);
 
 app.get('/', function(request, response) { 
   //var cssPath = "/stylesheets/style.css";
   //var body = template.grid(cssPath);
   //var html = template.html("", body, "");
-  var body = `
-  <img src=${imgPath}>
-  `
-  
-  var html = template.html(
-    "",
-    body,
-    ""
-  );
+  for (let i = 0; i < pathList.length; i++) {
+    var body = `
+    <img src=${pathList[i]}>
+    `
+    
+    var html = template.html(
+      "",
+      body,
+      ""
+    );
+  }
   response.send(html);
 });
 
