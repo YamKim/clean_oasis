@@ -11,11 +11,13 @@
 
 .head {
   display: grid;
+  place-content: center space-evenly;
   grid-template-columns: 5fr 4fr 1fr;
 }
 
 .category:nth-child(1) {
   display: grid;
+  place-content: center space-evenly;
   grid-template-columns: repeat(4, 1fr);
 }
 
@@ -29,16 +31,19 @@
 
 .box:nth-child(2) {
   display: grid;
+  place-content: center space-evenly;
   background-color: orange;
   grid-template-rows: 8fr 2fr;
 }
 
 .box:nth-child(4) {
   display: grid;
+  place-content: center space-evenly;
   grid-template-rows: repeat(8, 1fr);
 }
 
 .tail {
   display: grid;
+  place-content: center space-evenly;
   background-color: yellow;
 }

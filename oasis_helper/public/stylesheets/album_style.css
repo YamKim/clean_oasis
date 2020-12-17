@@ -5,3 +5,9 @@
   grid-auto-rows: minmax(200px, auto);
   background-color: yellow;
 }
+
+.cell {
+  display: grid;
+  place-content: center space-evenly;
+  grid-template-rows: 1fr 5fr;
+}

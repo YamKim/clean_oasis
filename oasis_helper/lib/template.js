@@ -104,9 +104,9 @@ module.exports = {
       while (++i < colNum) {
         var intraId = data[++k].intra_id;
         var imgPath = `<img src = /images/${data[k].intra_id}.png width=100px height=100px>`;
-        ret += "<div>"; 
-        ret += intraId;
-        ret += imgPath;
+        ret += `<div class="cell">`; 
+          ret += `<div>${intraId}</div>`;
+          ret += `<div>${imgPath}</div>`;
         ret += "</div>"; 
       }
       ret += `</div>`;
