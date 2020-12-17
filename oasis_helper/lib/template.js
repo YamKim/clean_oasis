@@ -90,6 +90,10 @@ module.exports = {
     return (ret);
   },
   album: function(rowNum, data, cssPath) {
+    if (rowNum % 4)
+      rowNum /= 4;
+    else
+      rowNum /= 4 + 1;
     var k = -1;
     var j = -1;
     const colNum = 4
@@ -99,9 +103,10 @@ module.exports = {
       var i = -1;
       while (++i < colNum) {
        var intraId = data[++k].intra_id;
-       var imgPath = `/images/${data[++k].intra_id}.png`;
+       var imgPath = `<img src = /images/${data[k].intra_id}.png width=100px height=100px>`;
        ret += "<div>"; 
        ret += intraId;
+       ret += imgPath;
        ret += "</div>"; 
       }
       ret += `</div>`;
