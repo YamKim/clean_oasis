@@ -32,7 +32,7 @@ module.exports = {
             <div></div>
         </div>
         <div class="category">
-            <div>등록</div>
+            <div><a href="register">등록</a></div>
         </div>
       </div>
       <div>
@@ -42,7 +42,7 @@ module.exports = {
     ` 
     return (ret);
   },
-  grid: function(cssPath) {
+  register: function(cssPath, button) {
     var ret = `
     <link rel="stylesheet" href=${cssPath}>
     <div class="wrapper">
@@ -57,7 +57,7 @@ module.exports = {
                 <div></div>
             </div>
             <div class="category">
-                <div>등록</div>
+                <div><a href="register">등록</a></div>
             </div>
         </div>
         <div class="body">
@@ -102,12 +102,12 @@ module.exports = {
       ret += `<div class="body">`;
       var i = -1;
       while (++i < colNum) {
-       var intraId = data[++k].intra_id;
-       var imgPath = `<img src = /images/${data[k].intra_id}.png width=100px height=100px>`;
-       ret += "<div>"; 
-       ret += intraId;
-       ret += imgPath;
-       ret += "</div>"; 
+        var intraId = data[++k].intra_id;
+        var imgPath = `<img src = /images/${data[k].intra_id}.png width=100px height=100px>`;
+        ret += "<div>"; 
+        ret += intraId;
+        ret += imgPath;
+        ret += "</div>"; 
       }
       ret += `</div>`;
     }

@@ -19,6 +19,7 @@ app.get('*', function(request, response, next){
   });
 });
 
+/*
 var db = mysql.createConnection({
   host:'localhost',
   user:'nodejs',
@@ -34,21 +35,6 @@ db.query(`select * from beverage`, function(error, topics){
   for (let i = 0; i < topics.length; i++)
     pathList.push(topics[i]);
 }); 
-
-/*
-var db = mysql.createConnection({
-  host:'localhost',
-  user:'nodejs',
-  password:'1111',
-  database:'opentutorials'
-});
-db.connect();
-var imgPath = "/images/";
-db.query(`SELECT title FROM topic where id = 2`, function(error, topics){
-  imgPath += topics[0].title
-  imgPath += ".png";
-}); 
-console.log(imgPath);
 */
 
 app.get('/', function(request, response) { 
@@ -67,7 +53,8 @@ app.get('/beverage', function(request, response) {
   //var cssPath = "/stylesheets/register_style.css";
   //var body = template.grid(cssPath, button);
   var cssPath = "/stylesheets/album_style.css";
-  body = template.album(pathList.length, pathList, cssPath);
+  //body = template.album(pathList.length, pathList, cssPath);
+  body = "";
   var html = template.html(
     "",
     body,
@@ -76,8 +63,15 @@ app.get('/beverage', function(request, response) {
   response.send(html);
 });
 
-app.get('/register/:registerId', function(request, response) {
-  console.log(request.params);
+app.get('/register', function(request, response) {
+  var cssPath = "/stylesheets/register_style.css";
+  var body = template.register(cssPath, "button");
+  var html = template.html(
+    "",
+    body,
+    ""
+  );
+  response.send(html);
 })
  
 app.listen(3000, function() {
