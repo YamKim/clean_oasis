@@ -52,7 +52,6 @@
   display: grid;
   text-align: center;
   align-self: center;
-  background-color: skyblue;
   grid-template-columns: repeat(3, 1fr);
 }
 
@@ -86,4 +85,20 @@
   align-self: stretch;
   background-color: yellowgreen;
   grid-template-columns: repeat(2, 1fr);
+}
+
+#selected {
+  background-color: #f44336;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  padding: 15px 25px;
+}
+
+#unselected {
+  background-color: #ffb5b0;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  padding: 15px 25px;
 }

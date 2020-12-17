@@ -60,26 +60,36 @@ app.get('/beverage', function(request, response) {
   response.send(html);
 });
 
+function getAlarmTime(date) {
+  var ret = [];
+  var hour = date.getHours();
+  var minutes = date.getMinutes();
+  console.log(hour, minutes);
+  if (minutes >= 30 && minutes < 60)
+    minutes = 30;
+  else
+    minutes = 0;
+  hour += 2 + Math.floor((minutes + 30) / 60);
+  hour = (hour) % 24;
+  minutes = (minutes + 30) % 60;
+  for (var i = 0; i < 8; ++i) {
+    tmpHour = hour >= 0 && hour <= 9 ? "0" + hour : hour;
+    tmpMinutes = minutes == 0 ? "0" + minutes : minutes;
+    ret.push({hour:`${tmpHour}`, minutes:`${tmpMinutes}`});
+    minutes += 30
+    if ((minutes = minutes % 60) == 0) {
+      hour += 1;
+    }
+    hour %= 24;
+  }
+  return (ret);
+}
+
 app.get('/register', function(request, response) {
-  var cssPath = "/stylesheets/register_style.css";
-  var body = template.register(cssPath);
-  /*
-  var body = `
-  <form action="/register_process" method="post">
-   
-    <select class="category" name="category">
-      <option name="beverage" value="1">음료</option>
-      <option name="snack" value="2">간식</option>
-      <option name="etc" value="3">비품</option>
-    </select>
-    <p><button id='button1'> <a href=/beverage>음료</a> </button></p>
-    <p><input type="text" name="intraId" placeholder="intra ID"></p>
-    <p><textarea name="message" placeholder="message"></textarea></p>
-    <p><input type="submit" value="등록"></p>
-    <p><input type="submit" value="취소"></p>
-  </form>
-  `;
-  */
+  var date = new Date();
+  alarmArr = getAlarmTime(date);
+  var cssPath = "/stylesheets/register_beverage_style.css";
+  var body = template.register_beverage(cssPath, alarmArr);
   
   var html = template.html(
     "",
@@ -89,27 +99,53 @@ app.get('/register', function(request, response) {
   response.send(html);
 })
 
-app.post('/register_process', function(request, response){
-  var category = request.body.category;
+app.get('/register/snack', function(request, response) {
+  var cssPath = "/stylesheets/register_snack_style.css";
+  var body = template.register_snack(cssPath);
+  var html = template.html(
+    "",
+    body,
+    ""
+  );
+  response.send(html);
+})
+
+app.get('/register/etc', function(request, response) {
+  var cssPath = "/stylesheets/register_etc_style.css";
+  var body = template.register_etc(cssPath);
+  var html = template.html(
+    "",
+    body,
+    ""
+  );
+  response.send(html);
+})
+
+app.post('/register_beverage_post', function(request, response){
   var intraId = request.body.intraId;
-  var message = request.body.message;
-  console.log(category, intraId, message);
+  var alarmNum = request.body.alarm;
+  console.log(intraId, alarmArr[alarmNum - 1]);
   response.redirect(`/register`);
   response.end();
 });
 
-/*
-$('#button1').click(function(){
-  console.log('button clicked');
-  $.ajax({url: 'test1', success:function(res){
-      console.log('server response is', res);
-  }});
+app.post('/register_snack_post', function(request, response){
+  var intraId = request.body.intraId;
+  var message = request.body.message;
+  var notification = request.body.notification;
+  console.log(intraId, message, notification);
+  response.redirect(`/register/snack`);
+  response.end();
 });
 
-app.get("/test1", function (request, response) {
-  response.send('ok');
+app.post('/register_etc_post', function(request, response){
+  var intraId = request.body.intraId;
+  var message = request.body.message;
+  var notification = request.body.notification;
+  console.log(intraId, message, notification);
+  response.redirect(`/register/etc`);
+  response.end();
 });
-*/
 
 app.listen(3000, function() {
   console.log('Example app listening on port 3000!')
