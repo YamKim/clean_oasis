@@ -141,8 +141,8 @@ module.exports = {
             </div>
             <div class="cell">
               <select class="category" name="notification">
-                <option name="beverage" value=true>채널에 알리기</option>
-                <option name="snack" value=false>조용히 기부하기</option>
+                <option name="beverage" value=1>채널에 알리기</option>
+                <option name="snack" value=0>조용히 기부하기</option>
               </select>
             </div>
             <div class="cell">
@@ -198,8 +198,8 @@ module.exports = {
             </div>
             <div class="cell">
               <select class="category" name="notification">
-                <option name="beverage" value=true>채널에 알리기</option>
-                <option name="snack" value=false>조용히 기부하기</option>
+                <option name="beverage" value=1>채널에 알리기</option>
+                <option name="snack" value=0>조용히 기부하기</option>
               </select>
             </div>
             <div class="cell">
