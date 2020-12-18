@@ -41,12 +41,11 @@ app.get('*', function(request, response, next){
 var db = mysql.createConnection({
   host:'localhost',
   user:'root',
-  password:'5933',
+  password:'1111',
   database:'42_oasis'
 });
 db.connect();
 
-/*
 pathList = [];
 
 db.query(`select * from beverage`, function(error, topics){
@@ -54,11 +53,11 @@ db.query(`select * from beverage`, function(error, topics){
   for (var i = 0; i < topics.length; i++)
     pathList.push(topics[i]);
 }); 
-*/
+
 
 app.get('/', function(request, response) { 
   var cssPath = "/stylesheets/info_style.css";
-  var body = template.info(cssPath, "/images/info.png");
+  var body = template.info(cssPath, "/images/oasis.jpg");
   //var html = template.html("", body, "");
   var html = template.html(
     "",
