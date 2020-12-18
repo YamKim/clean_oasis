@@ -8,6 +8,8 @@ var sanitizeHtml = require('sanitize-html');
 var compression = require('compression')
 var template = require('./lib/template.js');
 var mysql = require('mysql');
+
+var alarmTable = new Array(48);
  
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -28,16 +30,6 @@ var db = mysql.createConnection({
 });
 db.connect();
 
-pathList = [];
-
-/*
-db.query(`select * from beverage`, function(error, topics){
-  if (error) console.log(error);
-  for (var i = 0; i < topics.length; i++)
-    pathList.push(topics[i]);
-}); 
-*/
-
 app.get('/', function(request, response) { 
   var cssPath = "/stylesheets/info_style.css";
   var body = template.info(cssPath, "/images/info.png");
@@ -48,36 +40,6 @@ app.get('/', function(request, response) {
     ""
   );
   response.send(html);
-});
-
-function insertDB(category, intraId, message, alarmNum, notification) {
-  if (category == 1) {
-    db.query(`insert into beverage(intra_id, register_time, alarm_time) values(` + db.escape(intraId) + `, now(), now())`, function(error){
-      if (error) console.log(error);
-    });
-  }
-  else if (category == 2) {
-    console.log('testtest')
-    db.query(`insert into snack(intra_id, register_time, message, alarm_check) values(` + db.escape(intraId) + `, now(), `+ db.escape(message) + `, `+ db.escape(notification) + `)`, function(error){
-      if (error) console.log(error);
-    });
-  }
-  else if (category == 3) {
-    db.query(`insert into needs(intra_id, register_time, message, alarm_check) values(` + db.escape(intraId) + `, now(), `+ db.escape(message) + `, `+ db.escape(notification) + `)`, function(error){
-      if (error) console.log(error);
-    });
-  }
-}
-
-app.post('/register_process', function(request, response){
-  var category = request.body.category;
-  var intraId = request.body.intraId;
-  var message = request.body.message;
-  console.log(category, intraId, message);
-  insertDB(category, intraId, message);
- 
-  response.redirect(`/register`);
-  response.end();
 });
 
 app.get('/beverage', function(request, response) {
@@ -152,11 +114,41 @@ app.get('/register/etc', function(request, response) {
   response.send(html);
 })
 
+function setAlarmTable(regTime, intraId) {
+  var idx = parseInt(regTime.hour) * 2;
+  idx = parseInt(regTime.minute) === 0 ? idx : idx + 1;
+  console.log(idx);
+  //alarmTable[idx].append(intraId)
+}
+
+
+function insertDB(category, intraId, alarmTime, message, notification) {
+  var date = new Date();
+  var currentTime = 1900 + date.getYear() + '-' + (1 + date.getMonth()) + '-' + date.getDate() + ' ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds(); 
+  if (category == 1) {
+    db.query(`insert into beverage(intra_id, register_time, alarm_time) values(?, ?, ?)`, [intraId, currentTime, alarmTime], function(error){
+      if (error) console.log(error);
+    });
+  }
+  else if (category == 2) {
+    db.query(`insert into snack(intra_id, register_time, message, alarm_check) values(?, ?, ?, ?)`,[intraId, currentTime, message, notification], function(error){
+      if (error) console.log(error);
+    });
+  }
+  else if (category == 3) {
+    db.query(`insert into needs(intra_id, register_time, message, alarm_check) values(?, ?, ?, ?)`,[intraId, currentTime, message, notification], function(error){
+      if (error) console.log(error);
+    });
+  }
+}
+
 app.post('/register_beverage_post', function(request, response){
+  var date = new Date();
   var intraId = request.body.intraId;
   var alarmNum = request.body.alarm;
-  insertDB(1, intraId, '', alarmNum, '');
-  console.log(intraId, alarmArr[alarmNum - 1]);
+  setAlarmTable(alarmArr[alarmNum - 1], intraId);
+  var alarmTime = 1900 + date.getYear() + '-' + (1 + date.getMonth()) + '-' + date.getDate() + ' ' + alarmArr[alarmNum - 1].hour + ':' + alarmArr[alarmNum - 1].minutes + ':00'; 
+  insertDB(1, intraId, alarmTime, '', '')
   response.redirect(`/register`);
   response.end();
 });
@@ -165,8 +157,7 @@ app.post('/register_snack_post', function(request, response){
   var intraId = request.body.intraId;
   var message = request.body.message;
   var notification = request.body.notification;
-  insertDB(2, intraId, message, '', notification);
-  console.log(intraId, message, notification);
+  insertDB(2, intraId, '', message, notification)
   response.redirect(`/register/snack`);
   response.end();
 });
@@ -175,8 +166,7 @@ app.post('/register_etc_post', function(request, response){
   var intraId = request.body.intraId;
   var message = request.body.message;
   var notification = request.body.notification;
-  insertDB(3, intraId, message, '', notification);
-  console.log(intraId, message, notification);
+  insertDB(3, intraId, '', message, notification)
   response.redirect(`/register/etc`);
   response.end();
 });
