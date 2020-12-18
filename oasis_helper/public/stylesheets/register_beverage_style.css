@@ -108,7 +108,7 @@
   text-align: center;
   text-decoration: none;
   display: inline-block;
-  padding: 15px 25px;
+  padding: 10px 10px;
 }
 
 #category_unselected {
@@ -116,6 +116,5 @@
   text-align: center;
   text-decoration: none;
   display: inline-block;
-  padding: 15px 25px;
+  padding: 10px 10px;
 }
-

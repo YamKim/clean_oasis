@@ -29,7 +29,7 @@ module.exports = {
             <div></div>
         </div>
         <div class="category">
-            <div><a href=/register>등록</a></div>
+            <div><a id="category_unselected" href=/register>등록</a></div>
         </div>
       </div>
       <div>
@@ -46,16 +46,16 @@ module.exports = {
     <div class="wrapper">
         <div class="head">
           <div class="category">
-              <div><a href="/">안내</a></div>
-              <div><a href="/beverage">음료</a></div>
-              <div><a href="/snack">간식</a></div>
-              <div><a href="/etc">비품</a></div>
+              <div><a id="category_unselected" href="/">안내</a></div>
+              <div><a id="category_unselected" href="/beverage">음료</a></div>
+              <div><a id="category_unselected" href="/snack">간식</a></div>
+              <div><a id="category_unselected" href="/etc">비품</a></div>
           </div>
           <div class="category">
               <div></div>
           </div>
           <div class="category">
-              <div><a href=/register>등록</a></div>
+              <div><a id="category_selected" href=/register>등록</a></div>
           </div>
         </div>
         <div class="body">
@@ -106,16 +106,16 @@ module.exports = {
       <div class="wrapper">
         <div class="head">
           <div class="category">
-              <div><a href="/">안내</a></div>
-              <div><a href="/beverage">음료</a></div>
-              <div><a href="/snack">간식</a></div>
-              <div><a href="/etc">비품</a></div>
+              <div><a id="category_unselected" href="/">안내</a></div>
+              <div><a id="category_unselected" href="/beverage">음료</a></div>
+              <div><a id="category_unselected" href="/snack">간식</a></div>
+              <div><a id="category_unselected" href="/etc">비품</a></div>
           </div>
           <div class="category">
               <div></div>
           </div>
           <div class="category">
-              <div><a href=/register>등록</a></div>
+              <div><a id="category_selected" href=/register>등록</a></div>
           </div>
         </div>
         <div class="body">
@@ -163,16 +163,16 @@ module.exports = {
       <div class="wrapper">
         <div class="head">
           <div class="category">
-              <div><a href="/">안내</a></div>
-              <div><a href="/beverage">음료</a></div>
-              <div><a href="/snack">간식</a></div>
-              <div><a href="/etc">비품</a></div>
+              <div><a id="category_unselected" href="/">안내</a></div>
+              <div><a id="category_unselected" href="/beverage">음료</a></div>
+              <div><a id="category_unselected" href="/snack">간식</a></div>
+              <div><a id="category_unselected" href="/etc">비품</a></div>
           </div>
           <div class="category">
               <div></div>
           </div>
           <div class="category">
-              <div><a href="/register">등록</a></div>
+              <div><a id="category_selected" href="/register">등록</a></div>
           </div>
         </div>
         <div class="body">
