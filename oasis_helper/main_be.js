@@ -24,8 +24,8 @@ app.get('*', function(request, response, next){
 
 var db = mysql.createConnection({
   host:'localhost',
-  user:'nodejs',
-  password:'1111',
+  user:'root',
+  password:'5933',
   database:'42_oasis'
 });
 db.connect();

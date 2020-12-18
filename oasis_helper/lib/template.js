@@ -77,16 +77,16 @@ module.exports = {
             </div>
             <div><input type="text" name="intraId" placeholder="intra ID"></div>
             <div class="cell">
-              <div><input type="radio" name="alarm" value=1 checked>${alarmArr[0].hour}:${alarmArr[0].minutes}</div>
-              <div><input type="radio" name="alarm" value=2>${alarmArr[1].hour}:${alarmArr[1].minutes}</div>
-              <div><input type="radio" name="alarm" value=3>${alarmArr[2].hour}:${alarmArr[2].minutes}</div>
-              <div><input type="radio" name="alarm" value=4>${alarmArr[3].hour}:${alarmArr[3].minutes}</div>
+              <div><input type="radio" name="alarm" value=0 checked>${alarmArr[0].hour}:${alarmArr[0].minute}</div>
+              <div><input type="radio" name="alarm" value=1>${alarmArr[1].hour}:${alarmArr[1].minute}</div>
+              <div><input type="radio" name="alarm" value=2>${alarmArr[2].hour}:${alarmArr[2].minute}</div>
+              <div><input type="radio" name="alarm" value=3>${alarmArr[3].hour}:${alarmArr[3].minute}</div>
             </div>
             <div class="cell">
-              <div><input type="radio" name="alarm" value=5>${alarmArr[4].hour}:${alarmArr[4].minutes}</div>
-              <div><input type="radio" name="alarm" value=6>${alarmArr[5].hour}:${alarmArr[5].minutes}</div>
-              <div><input type="radio" name="alarm" value=7>${alarmArr[6].hour}:${alarmArr[6].minutes}</div>
-              <div><input type="radio" name="alarm" value=8>${alarmArr[7].hour}:${alarmArr[7].minutes}</div>
+              <div><input type="radio" name="alarm" value=4>${alarmArr[4].hour}:${alarmArr[4].minute}</div>
+              <div><input type="radio" name="alarm" value=5>${alarmArr[5].hour}:${alarmArr[5].minute}</div>
+              <div><input type="radio" name="alarm" value=6>${alarmArr[6].hour}:${alarmArr[6].minute}</div>
+              <div><input type="radio" name="alarm" value=7>${alarmArr[7].hour}:${alarmArr[7].minute}</div>
             </div>
             <div class="cell">
               <div><input type="submit" value="등록"></div>

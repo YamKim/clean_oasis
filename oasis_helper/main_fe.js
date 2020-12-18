@@ -9,7 +9,24 @@ var compression = require('compression')
 var template = require('./lib/template.js');
 var mysql = require('mysql');
 
+var alarmArr;
 var alarmTable = new Array(48);
+for (var i = 0; i < 48; ++i) {
+  alarmTable[i] = new Array();
+}
+
+var timerId = null;
+function StartClock() {
+  var curTime = new Date();
+  console.log(parseInt(curTime.getMinutes()));
+  if (parseInt(curTime.getMinutes()) % 30 === 0) {
+    var idx = parseInt(curTime.hour) * 2;
+    idx = curTime.minute === "00" ? idx : idx + 1;
+    console.log(alarmTable[idx]);
+  }
+  timerId = setTimeout(StartClock, 60000);
+}
+StartClock();
  
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -21,7 +38,6 @@ app.get('*', function(request, response, next){
   });
 });
 
-/*
 var db = mysql.createConnection({
   host:'localhost',
   user:'root',
@@ -30,6 +46,7 @@ var db = mysql.createConnection({
 });
 db.connect();
 
+/*
 pathList = [];
 
 db.query(`select * from beverage`, function(error, topics){
@@ -65,21 +82,21 @@ app.get('/beverage', function(request, response) {
 function getAlarmTime(date) {
   var ret = [];
   var hour = date.getHours();
-  var minutes = date.getMinutes();
-  console.log(hour, minutes);
-  if (minutes >= 30 && minutes < 60)
-    minutes = 30;
+  var minute = date.getMinutes();
+  console.log(hour, minute);
+  if (minute >= 30 && minute < 60)
+    minute = 30;
   else
-    minutes = 0;
-  hour += 2 + Math.floor((minutes + 30) / 60);
+    minute = 0;
+  hour += 2 + Math.floor((minute + 30) / 60);
   hour = (hour) % 24;
-  minutes = (minutes + 30) % 60;
+  minute = (minute + 30) % 60;
   for (var i = 0; i < 8; ++i) {
     tmpHour = hour >= 0 && hour <= 9 ? "0" + hour : hour;
-    tmpMinutes = minutes == 0 ? "0" + minutes : minutes;
-    ret.push({hour:`${tmpHour}`, minutes:`${tmpMinutes}`});
-    minutes += 30
-    if ((minutes = minutes % 60) == 0) {
+    tmpMinute = minute == 0 ? "0" + minute : minute;
+    ret.push({hour:`${tmpHour}`, minute:`${tmpMinute}`});
+    minute += 30
+    if ((minute = minute % 60) == 0) {
       hour += 1;
     }
     hour %= 24;
@@ -90,11 +107,8 @@ function getAlarmTime(date) {
 app.get('/register', function(request, response) {
   var date = new Date();
   alarmArr = getAlarmTime(date);
-  var alarmDB = `${date.getYear()}${date.getMonth()}${date.getHours()}${date.getMinutes()}${date.getSeconds()}`;
-  console.log(alarmDB);
   var cssPath = "/stylesheets/register_beverage_style.css";
   var body = template.register_beverage(cssPath, alarmArr);
-  
   var html = template.html(
     "",
     body,
@@ -127,16 +141,39 @@ app.get('/register/etc', function(request, response) {
 
 function setAlarmTable(regTime, intraId) {
   var idx = parseInt(regTime.hour) * 2;
-  idx = parseInt(regTime.minute) === 0 ? idx : idx + 1;
-  console.log(idx);
-  //alarmTable[idx].append(intraId)
+  console.log("regTime.minut:", regTime.minute);
+  idx = regTime.minute === "00" ? idx : idx + 1;
+  alarmTable[idx].push(intraId)
+}
+
+
+function insertDB(category, intraId, alarmTime, message, notification) {
+  var date = new Date();
+  var currentTime = 1900 + date.getYear() + '-' + (1 + date.getMonth()) + '-' + date.getDate() + ' ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds(); 
+  if (category == 1) {
+    db.query(`insert into beverage(intra_id, register_time, alarm_time) values(?, ?, ?)`, [intraId, currentTime, alarmTime], function(error){
+      if (error) console.log(error);
+    });
+  }
+  else if (category == 2) {
+    db.query(`insert into snack(intra_id, register_time, message, alarm_check) values(?, ?, ?, ?)`,[intraId, currentTime, message, notification], function(error){
+      if (error) console.log(error);
+    });
+  }
+  else if (category == 3) {
+    db.query(`insert into needs(intra_id, register_time, message, alarm_check) values(?, ?, ?, ?)`,[intraId, currentTime, message, notification], function(error){
+      if (error) console.log(error);
+    });
+  }
 }
 
 app.post('/register_beverage_post', function(request, response){
+  var date = new Date();
   var intraId = request.body.intraId;
   var alarmNum = request.body.alarm;
-  // console.log(intraId, alarmArr[alarmNum - 1]);
-  setAlarmTable(alarmArr[alarmNum - 1], intraId);
+  setAlarmTable(alarmArr[alarmNum], intraId);
+  var alarmTime = 1900 + date.getYear() + '-' + (1 + date.getMonth()) + '-' + date.getDate() + ' ' + alarmArr[alarmNum].hour + ':' + alarmArr[alarmNum].minute + ':00'; 
+  insertDB(1, intraId, alarmTime, '', '')
   response.redirect(`/register`);
   response.end();
 });
@@ -145,7 +182,7 @@ app.post('/register_snack_post', function(request, response){
   var intraId = request.body.intraId;
   var message = request.body.message;
   var notification = request.body.notification;
-  console.log(intraId, message, notification);
+  insertDB(2, intraId, '', message, notification)
   response.redirect(`/register/snack`);
   response.end();
 });
@@ -154,7 +191,7 @@ app.post('/register_etc_post', function(request, response){
   var intraId = request.body.intraId;
   var message = request.body.message;
   var notification = request.body.notification;
-  console.log(intraId, message, notification);
+  insertDB(3, intraId, '', message, notification)
   response.redirect(`/register/etc`);
   response.end();
 });
