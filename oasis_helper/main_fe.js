@@ -18,11 +18,9 @@ for (var i = 0; i < 48; ++i) {
 var timerId = null;
 function StartClock() {
   var curTime = new Date();
-  console.log(parseInt(curTime.getMinutes()));
   if (parseInt(curTime.getMinutes()) % 30 === 0) {
     var idx = parseInt(curTime.hour) * 2;
     idx = curTime.minute === "00" ? idx : idx + 1;
-    console.log(alarmTable[idx]);
   }
   timerId = setTimeout(StartClock, 60000);
 }
@@ -41,7 +39,7 @@ app.get('*', function(request, response, next){
 var db = mysql.createConnection({
   host:'localhost',
   user:'root',
-  password:'1111',
+  password:'5933',
   database:'42_oasis'
 });
 db.connect();
