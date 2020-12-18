@@ -8,6 +8,8 @@ var sanitizeHtml = require('sanitize-html');
 var compression = require('compression')
 var template = require('./lib/template.js');
 var mysql = require('mysql');
+
+var alarmTable = new Array(48);
  
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -49,35 +51,6 @@ app.get('/', function(request, response) {
   response.send(html);
 });
 
-function insertDB(category, intraId, message) {
-  if (category == 1) {
-    db.query(`insert into beverage(intra_id, register_time, alarm_time) values(` + db.escape(intraId) + `, now(), now())`, function(error){
-      if (error) console.log(error);
-    });
-  }
-  else if (category == 2) {
-    db.query(`insert into snack(intra_id, register_time, message, alarm_check) values(` + db.escape(intraId) + `, now(), `+ db.escape(message) + `, 1)`, function(error){
-      if (error) console.log(error);
-    });
-  }
-  else if (category == 3) {
-    db.query(`insert into needs(intra_id, register_time, message, alarm_check) values(` + db.escape(intraId) + `, now(), `+ db.escape(message) + `, 1)`, function(error){
-      if (error) console.log(error);
-    });
-  }
-}
-
-app.post('/register_process', function(request, response){
-  var category = request.body.category;
-  var intraId = request.body.intraId;
-  var message = request.body.message;
-  console.log(category, intraId, message);
-  insertDB(category, intraId, message);
- 
-  response.redirect(`/register`);
-  response.end();
-});
-
 app.get('/beverage', function(request, response) {
   var cssPath = "/stylesheets/album_style.css";
   var body = template.album(pathList.length, pathList, cssPath);
@@ -117,6 +90,8 @@ function getAlarmTime(date) {
 app.get('/register', function(request, response) {
   var date = new Date();
   alarmArr = getAlarmTime(date);
+  var alarmDB = `${date.getYear()}${date.getMonth()}${date.getHours()}${date.getMinutes()}${date.getSeconds()}`;
+  console.log(alarmDB);
   var cssPath = "/stylesheets/register_beverage_style.css";
   var body = template.register_beverage(cssPath, alarmArr);
   
@@ -150,10 +125,18 @@ app.get('/register/etc', function(request, response) {
   response.send(html);
 })
 
+function setAlarmTable(regTime, intraId) {
+  var idx = parseInt(regTime.hour) * 2;
+  idx = parseInt(regTime.minute) === 0 ? idx : idx + 1;
+  console.log(idx);
+  //alarmTable[idx].append(intraId)
+}
+
 app.post('/register_beverage_post', function(request, response){
   var intraId = request.body.intraId;
   var alarmNum = request.body.alarm;
-  console.log(intraId, alarmArr[alarmNum - 1]);
+  // console.log(intraId, alarmArr[alarmNum - 1]);
+  setAlarmTable(alarmArr[alarmNum - 1], intraId);
   response.redirect(`/register`);
   response.end();
 });
