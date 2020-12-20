@@ -1,7 +1,6 @@
 .wrapper {
   display: grid;
-  width: 700px;
-  height: 300px;
+
   grid-template-rows: 1fr 20fr;
   grid-gap: 5px;
   grid-auto-rows: minmax(50px, auto);
@@ -9,20 +8,10 @@
   color: #444;
 }
 
-.head {
-  display: grid;
-  place-content: center space-evenly;
-  grid-template-columns: 5fr 4fr 1fr;
-}
-
-.category:nth-child(1) {
-  display: grid;
-  place-content: center space-evenly;
-  grid-template-columns: repeat(4, 1fr);
-}
-
 .body {
   display: grid;
+  width: 700px;
+  height: 300px;
   grid-template-columns: 1fr 1fr;
   grid-gap: 5px;
   grid-auto-rows: minmax(200px, auto);

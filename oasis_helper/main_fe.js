@@ -36,6 +36,7 @@ app.get('*', function(request, response, next){
   });
 });
 
+/*
 var db = mysql.createConnection({
   host:'localhost',
   user:'root',
@@ -51,14 +52,14 @@ db.query(`select * from beverage`, function(error, topics){
   for (var i = 0; i < topics.length; i++)
     pathList.push(topics[i]);
 }); 
-
+*/
 
 app.get('/', function(request, response) { 
-  var cssPath = "/stylesheets/info_style.css";
-  var body = template.info(cssPath, "/images/oasis.jpg");
+  var head = template.category("/stylesheets/category_style.css", 0); 
+  var body = template.info("/images/oasis.jpg");
   //var html = template.html("", body, "");
   var html = template.html(
-    "",
+    head,
     body,
     ""
   );
@@ -105,9 +106,10 @@ app.get('/register', function(request, response) {
   var date = new Date();
   alarmArr = getAlarmTime(date);
   var cssPath = "/stylesheets/register_beverage_style.css";
-  var body = template.register_beverage(cssPath, alarmArr);
+  var head = template.category("/stylesheets/category_style.css", 4); 
+  var body = template.register(cssPath, alarmArr, "beverage");
   var html = template.html(
-    "",
+    head,
     body,
     ""
   );
@@ -116,29 +118,29 @@ app.get('/register', function(request, response) {
 
 app.get('/register/snack', function(request, response) {
   var cssPath = "/stylesheets/register_snack_style.css";
-  var body = template.register_snack(cssPath);
+  var head = template.category("/stylesheets/category_style.css", 4); 
+  var body = template.register(cssPath, alarmArr, "snack");
   var html = template.html(
-    "",
-    body,
-    ""
+    head,
+    body
   );
   response.send(html);
 })
 
 app.get('/register/etc', function(request, response) {
   var cssPath = "/stylesheets/register_etc_style.css";
-  var body = template.register_etc(cssPath);
+  var head = template.category("/stylesheets/category_style.css", 4); 
+  var body = template.register(cssPath, alarmArr, "etc");
   var html = template.html(
-    "",
-    body,
-    ""
+    head,
+    body
   );
   response.send(html);
 })
 
 function setAlarmTable(regTime, intraId) {
   var idx = parseInt(regTime.hour) * 2;
-  console.log("regTime.minut:", regTime.minute);
+  console.log("regTime.minute:", regTime.minute);
   idx = regTime.minute === "00" ? idx : idx + 1;
   alarmTable[idx].push(intraId)
 }
@@ -170,7 +172,8 @@ app.post('/register_beverage_post', function(request, response){
   var alarmNum = request.body.alarm;
   setAlarmTable(alarmArr[alarmNum], intraId);
   var alarmTime = 1900 + date.getYear() + '-' + (1 + date.getMonth()) + '-' + date.getDate() + ' ' + alarmArr[alarmNum].hour + ':' + alarmArr[alarmNum].minute + ':00'; 
-  insertDB(1, intraId, alarmTime, '', '')
+  console.log(request.body);
+  //insertDB(1, intraId, alarmTime, '', '')
   response.redirect(`/register`);
   response.end();
 });
