@@ -1,13 +1,3 @@
-.wrapper {
-  display: grid;
-
-  grid-template-rows: 1fr 20fr;
-  grid-gap: 5px;
-  grid-auto-rows: minmax(50px, auto);
-  background-color: #fff;
-  color: #444;
-}
-
 .body {
   display: grid;
   width: 700px;
