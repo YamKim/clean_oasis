@@ -1,0 +1,27 @@
+.head {
+  display: grid;
+  width: 700px;
+  grid-auto-rows: minmax(50px, auto);
+  grid-template-columns: 5fr 4fr 1fr;
+}
+
+.category:nth-child(1) {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+#category_selected {
+  background-color: #0095ff;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  padding: 10px 10px;
+}
+
+#category_unselected {
+  background-color: #a1d8ff;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  padding: 10px 10px;
+}
