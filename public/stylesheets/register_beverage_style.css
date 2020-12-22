@@ -16,7 +16,7 @@
   background-color: orange;
   text-align: center;
   margin: 5%;
-  grid-template-rows: 8fr 2fr;
+  grid-template-rows: 8fr 1fr;
 }
 
 .box:nth-child(2) {

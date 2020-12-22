@@ -53,6 +53,7 @@ db.query(`select * from beverage`, function(error, topics){
     pathList.push(topics[i]);
 }); 
 */
+
 app.get('/', function(request, response) { 
   var head = template.category("/stylesheets/category_style.css", 0); 
   var body = template.info("/images/oasis.jpg");
@@ -142,25 +143,33 @@ app.get('/capture', function(request, response) {
   var head = template.category("/stylesheets/category_style.css", 4); 
   var body = `
   <video id="video" width="320" height="240" autoplay></video>
-<canvas id="canvas" width="960" height="720"></canvas>
-<button type="button" id="webcamBtn">캡쳐하기</button>
-<script>
-if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-    navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
-        var video = document.getElementById('video');
-        video.srcObject = stream;
-        video.play();
-    });
-}
+    <canvas id="canvas" width="960" height="720"></canvas>
+    <button type="button" id="webcamBtn">캡쳐하기</button>
+    <a id="download" download="myImage.jpg" href="/capture" onclick="download_img(this);">
+      Download to myImage.jpg
+    </a> 
+    <script>
+      download_img = function(el) {
+        // get image URI from canvas object
+        var imageURI = canvas.toDataURL("image/jpg");
+        el.href = imageURI;
+      };
+      if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+          navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
+              var video = document.getElementById('video');
+              video.srcObject = stream;
+              video.play();
+          });
+      }
 
-var canvas = document.getElementById('canvas');
-var context = canvas.getContext('2d');
-var video = document.getElementById('video');
-document.getElementById("webcamBtn").addEventListener("click",function() {
-    context.drawImage(video,0,0,960,720);
-});
-</script>
-  
+      var canvas = document.getElementById('canvas');
+      var context = canvas.getContext('2d');
+      var video = document.getElementById('video');
+      document.getElementById("webcamBtn").addEventListener("click",function() {
+          context.drawImage(video,0,0,960,720);
+      });
+    </script>
+    
   `;
   var html = template.html(
     head,
@@ -196,12 +205,24 @@ function insertDB(category, intraId, alarmTime, message, notification) {
   }
 }
 
+function genTimeForm(date, hour, minute) {
+  console.log(date.getFullYear());
+  var year = date.getFullYear();
+  var month = date.getMonth();
+  var day = date.getDate(); 
+  if (hour == undefined)
+    hour = date.getHours();
+  if (minute == undefined)
+    minute = date.getMinutes();
+  return (`${year}-${month}-${day}-${hour}:${minute}:00`);
+}
+
 app.post('/register_beverage_post', function(request, response){
   var date = new Date();
   var intraId = request.body.intraId;
   var alarmNum = request.body.alarm;
   setAlarmTable(alarmArr[alarmNum], intraId);
-  var alarmTime = 1900 + date.getYear() + '-' + (1 + date.getMonth()) + '-' + date.getDate() + ' ' + alarmArr[alarmNum].hour + ':' + alarmArr[alarmNum].minute + ':00'; 
+  var alarmTime = getTimeForm(date, alarmArr[alarmNum].hour, alarmArr[alarmNum].minute);
   console.log(request.body);
   //insertDB(1, intraId, alarmTime, '', '')
   response.redirect(`/register`);
@@ -212,7 +233,7 @@ app.post('/register_snack_post', function(request, response){
   var intraId = request.body.intraId;
   var message = request.body.message;
   var notification = request.body.notification;
-  insertDB(2, intraId, '', message, notification)
+  //insertDB(2, intraId, '', message, notification)
   response.redirect(`/register/snack`);
   response.end();
 });
@@ -228,7 +249,8 @@ app.post('/register_etc_post', function(request, response){
 
 app.post('/test', (request, response) => {
   console.log('server received /test');
-  console.dir(request.body);
+  console.log(request.body['date']);
+  //var imgPath = genTimeForm(request.body['date']);
   response.send({data: "hihi"});
 });
 
