@@ -36,11 +36,10 @@ app.get('*', function(request, response, next){
   });
 });
 
-/*
 var db = mysql.createConnection({
   host:'localhost',
-  user:'root',
-  password:'5933',
+  user:'nodejs',
+  password:'1111',
   database:'42_oasis'
 });
 db.connect();
@@ -52,7 +51,7 @@ db.query(`select * from beverage`, function(error, topics){
   for (var i = 0; i < topics.length; i++)
     pathList.push(topics[i]);
 }); 
-*/
+
 
 app.get('/', function(request, response) { 
   var head = template.category("/stylesheets/category_style.css", 0); 
@@ -145,7 +144,6 @@ function setAlarmTable(regTime, intraId) {
   alarmTable[idx].push(intraId)
 }
 
-
 function insertDB(category, intraId, alarmTime, message, notification) {
   var date = new Date();
   var currentTime = 1900 + date.getYear() + '-' + (1 + date.getMonth()) + '-' + date.getDate() + ' ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds(); 
@@ -173,7 +171,7 @@ app.post('/register_beverage_post', function(request, response){
   setAlarmTable(alarmArr[alarmNum], intraId);
   var alarmTime = 1900 + date.getYear() + '-' + (1 + date.getMonth()) + '-' + date.getDate() + ' ' + alarmArr[alarmNum].hour + ':' + alarmArr[alarmNum].minute + ':00'; 
   console.log(request.body);
-  //insertDB(1, intraId, alarmTime, '', '')
+  insertDB(1, intraId, alarmTime, '', '')
   response.redirect(`/register`);
   response.end();
 });
