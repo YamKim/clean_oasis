@@ -249,7 +249,7 @@ app.post('/register_etc_post', function(request, response){
 
 app.post('/test', (request, response) => {
   console.log('server received /test');
-  console.log(request.body['date']);
+  console.log(request.body['pngPath']);
   //var imgPath = genTimeForm(request.body['date']);
   response.send({data: "hihi"});
 });
