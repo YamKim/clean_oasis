@@ -8,12 +8,15 @@ var sanitizeHtml = require('sanitize-html');
 var compression = require('compression')
 var template = require('./lib/template.js');
 var mysql = require('mysql');
+var moveFile = require('./lib/move_file.js');
+var controlTime = require('./lib/control_time.js');
+var pngPath;
 
 var alarmArr;
 var alarmTable = new Array(48);
 for (var i = 0; i < 48; ++i) {
   alarmTable[i] = new Array();
-}
+};
 
 function StartClock() {
   var curTime = new Date();
@@ -113,6 +116,7 @@ app.get('/register', function(request, response) {
     body,
     ""
   );
+  moveFile.move2Trash(__dirname);
   response.send(html);
 })
 
@@ -178,12 +182,7 @@ app.get('/capture', function(request, response) {
   response.send(html);
 })
 
-function setAlarmTable(regTime, intraId) {
-  var idx = parseInt(regTime.hour) * 2;
-  console.log("regTime.minute:", regTime.minute);
-  idx = regTime.minute === "00" ? idx : idx + 1;
-  alarmTable[idx].push(intraId)
-}
+
 
 function insertDB(category, intraId, alarmTime, message, notification) {
   var date = new Date();
@@ -205,7 +204,7 @@ function insertDB(category, intraId, alarmTime, message, notification) {
   }
 }
 
-function genTimeForm(date, hour, minute) {
+function getTimeForm(date, hour, minute) {
   console.log(date.getFullYear());
   var year = date.getFullYear();
   var month = date.getMonth();
@@ -221,9 +220,9 @@ app.post('/register_beverage_post', function(request, response){
   var date = new Date();
   var intraId = request.body.intraId;
   var alarmNum = request.body.alarm;
-  setAlarmTable(alarmArr[alarmNum], intraId);
+  controlTime.setAlarmTable(alarmTable, alarmArr[alarmNum], intraId);
   var alarmTime = getTimeForm(date, alarmArr[alarmNum].hour, alarmArr[alarmNum].minute);
-  console.log(request.body);
+  moveFile.move2Save(__dirname, pngPath);
   //insertDB(1, intraId, alarmTime, '', '')
   response.redirect(`/register`);
   response.end();
@@ -249,8 +248,8 @@ app.post('/register_etc_post', function(request, response){
 
 app.post('/test', (request, response) => {
   console.log('server received /test');
-  console.log(request.body['pngPath']);
-  //var imgPath = genTimeForm(request.body['date']);
+  pngPath = request.body['pngPath'];
+  console.log(pngPath);
   response.send({data: "hihi"});
 });
 
