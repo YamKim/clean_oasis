@@ -10,7 +10,9 @@ var template = require('./lib/template.js');
 var mysql = require('mysql');
 var moveFile = require('./lib/move_file.js');
 var controlTime = require('./lib/control_time.js');
+const control = require('./lib/move_file.js');
 var pngPath;
+
 
 var alarmArr;
 var alarmTable = new Array(48);
@@ -21,6 +23,7 @@ for (var i = 0; i < 48; ++i) {
 function StartClock() {
   var curTime = new Date();
   if (parseInt(curTime.getMinutes()) % 30 === 0) {
+    console.log("====================303030===================");
     var idx = parseInt(curTime.hour) * 2;
     idx = curTime.minute === "00" ? idx : idx + 1;
   }
@@ -39,6 +42,7 @@ app.get('*', function(request, response, next){
   });
 });
 
+pathList = [];
 /*
 var db = mysql.createConnection({
   host:'localhost',
@@ -48,7 +52,6 @@ var db = mysql.createConnection({
 });
 db.connect();
 
-pathList = [];
 
 db.query(`select * from beverage`, function(error, topics){
   if (error) console.log(error);
@@ -56,6 +59,12 @@ db.query(`select * from beverage`, function(error, topics){
     pathList.push(topics[i]);
 }); 
 */
+run_program() {
+  function 가이드
+  funcdtion 음료
+  function 간식
+  ...
+}
 
 app.get('/', function(request, response) { 
   var head = template.category("/stylesheets/category_style.css", 0); 
@@ -69,6 +78,11 @@ app.get('/', function(request, response) {
   response.send(html);
 });
 
+pathList.push('202011241958');
+pathList.push('2020112419198');
+pathList.push('2020112419526');
+pathList.push('20201124191917');
+// 삭제 버튼을 누를 때, status를 변경하여 숨김 status인 애는 띄우지 않기.
 app.get('/beverage', function(request, response) {
   var cssPath = "/stylesheets/album_style.css";
   var body = template.album(pathList.length, pathList, cssPath);
@@ -220,7 +234,7 @@ app.post('/register_beverage_post', function(request, response){
   var date = new Date();
   var intraId = request.body.intraId;
   var alarmNum = request.body.alarm;
-  controlTime.setAlarmTable(alarmTable, alarmArr[alarmNum], intraId);
+  //controlTime.setAlarmTable(alarmTable, alarmArr[alarmNum], intraId);
   var alarmTime = getTimeForm(date, alarmArr[alarmNum].hour, alarmArr[alarmNum].minute);
   moveFile.move2Save(__dirname, pngPath);
   //insertDB(1, intraId, alarmTime, '', '')
