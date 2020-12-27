@@ -1,19 +1,27 @@
 .body {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  grid-gap: 5px;
-  grid-auto-rows: minmax(200px, auto);
+  grid-gap: 20px;
+  padding: 20px;
+  place-content: space-evenly;
+  /*grid-auto-rows: minmax(200px, auto);*/
   background-color: yellow;
 }
 
 .cell {
   display: grid;
-  place-content: center space-evenly;
-  grid-template-rows: 1fr 3fr 1fr;
+  grid-template-rows: 8fr 1fr;
 }
-/*
-.cell:nth-child(3) {
+
+.item {
+  background-color: skyblue;
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  text-align: center;
+  grid-template-columns: 1fr 1fr;
 }
-*/
+
+.cover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}

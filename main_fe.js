@@ -9,10 +9,8 @@ var compression = require('compression')
 var template = require('./lib/template.js');
 var mysql = require('mysql');
 var moveFile = require('./lib/move_file.js');
-var controlTime = require('./lib/control_time.js');
-const control = require('./lib/move_file.js');
+var manageTime = require('./lib/manage_time.js');
 var pngPath;
-
 
 var alarmArr;
 var alarmTable = new Array(48);
@@ -20,16 +18,19 @@ for (var i = 0; i < 48; ++i) {
   alarmTable[i] = new Array();
 };
 
-function StartClock() {
+/*
+function sendAlarm() {
   var curTime = new Date();
   if (parseInt(curTime.getMinutes()) % 30 === 0) {
-    console.log("====================303030===================");
-    var idx = parseInt(curTime.hour) * 2;
-    idx = curTime.minute === "00" ? idx : idx + 1;
+      console.log("====================303030===================");
+      var idx = parseInt(curTime.hour) * 2;
+      idx = curTime.minute === "00" ? idx : idx + 1;
   }
-  timerId = setTimeout(StartClock, 60000);
+  console.log("hihi");
+  timerId = setTimeout(sendAlarm, 6000);
 }
-StartClock();
+*/
+manageTime.sendAlarm();
  
 app.use(express.static('public'));
 app.use(bodyParser.json());
@@ -59,12 +60,6 @@ db.query(`select * from beverage`, function(error, topics){
     pathList.push(topics[i]);
 }); 
 */
-run_program() {
-  function 가이드
-  funcdtion 음료
-  function 간식
-  ...
-}
 
 app.get('/', function(request, response) { 
   var head = template.category("/stylesheets/category_style.css", 0); 
@@ -78,50 +73,26 @@ app.get('/', function(request, response) {
   response.send(html);
 });
 
-pathList.push('202011241958');
-pathList.push('2020112419198');
-pathList.push('2020112419526');
-pathList.push('20201124191917');
+pathList.push("20201127183323");
+pathList.push("20201127183744");
+pathList.push("20201127184010");
+pathList.push("20201127184022");
 // 삭제 버튼을 누를 때, status를 변경하여 숨김 status인 애는 띄우지 않기.
 app.get('/beverage', function(request, response) {
   var cssPath = "/stylesheets/album_style.css";
-  var body = template.album(pathList.length, pathList, cssPath);
+  var head = template.category("/stylesheets/category_style.css", 1); 
+  var body = template.album(pathList, cssPath);
   var html = template.html(
-    "",
+    head,
     body,
     ""
   );
   response.send(html);
 });
 
-function getAlarmTime(date) {
-  var ret = [];
-  var hour = date.getHours();
-  var minute = date.getMinutes();
-  console.log(hour, minute);
-  if (minute >= 30 && minute < 60)
-    minute = 30;
-  else
-    minute = 0;
-  hour += 2 + Math.floor((minute + 30) / 60);
-  hour = (hour) % 24;
-  minute = (minute + 30) % 60;
-  for (var i = 0; i < 8; ++i) {
-    tmpHour = hour >= 0 && hour <= 9 ? "0" + hour : hour;
-    tmpMinute = minute == 0 ? "0" + minute : minute;
-    ret.push({hour:`${tmpHour}`, minute:`${tmpMinute}`});
-    minute += 30
-    if ((minute = minute % 60) == 0) {
-      hour += 1;
-    }
-    hour %= 24;
-  }
-  return (ret);
-}
-
 app.get('/register', function(request, response) {
   var date = new Date();
-  alarmArr = getAlarmTime(date);
+  alarmArr = manageTime.genAlarmArr(date);
   var cssPath = "/stylesheets/register_beverage_style.css";
   var head = template.category("/stylesheets/category_style.css", 4); 
   var body = template.register(cssPath, alarmArr, "beverage");
@@ -156,48 +127,6 @@ app.get('/register/etc', function(request, response) {
   response.send(html);
 })
 
-app.get('/capture', function(request, response) {
-  var cssPath = "/stylesheets/register_etc_style.css";
-  var head = template.category("/stylesheets/category_style.css", 4); 
-  var body = `
-  <video id="video" width="320" height="240" autoplay></video>
-    <canvas id="canvas" width="960" height="720"></canvas>
-    <button type="button" id="webcamBtn">캡쳐하기</button>
-    <a id="download" download="myImage.jpg" href="/capture" onclick="download_img(this);">
-      Download to myImage.jpg
-    </a> 
-    <script>
-      download_img = function(el) {
-        // get image URI from canvas object
-        var imageURI = canvas.toDataURL("image/jpg");
-        el.href = imageURI;
-      };
-      if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-          navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
-              var video = document.getElementById('video');
-              video.srcObject = stream;
-              video.play();
-          });
-      }
-
-      var canvas = document.getElementById('canvas');
-      var context = canvas.getContext('2d');
-      var video = document.getElementById('video');
-      document.getElementById("webcamBtn").addEventListener("click",function() {
-          context.drawImage(video,0,0,960,720);
-      });
-    </script>
-    
-  `;
-  var html = template.html(
-    head,
-    body
-  );
-  response.send(html);
-})
-
-
-
 function insertDB(category, intraId, alarmTime, message, notification) {
   var date = new Date();
   var currentTime = 1900 + date.getYear() + '-' + (1 + date.getMonth()) + '-' + date.getDate() + ' ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds(); 
@@ -218,24 +147,14 @@ function insertDB(category, intraId, alarmTime, message, notification) {
   }
 }
 
-function getTimeForm(date, hour, minute) {
-  console.log(date.getFullYear());
-  var year = date.getFullYear();
-  var month = date.getMonth();
-  var day = date.getDate(); 
-  if (hour == undefined)
-    hour = date.getHours();
-  if (minute == undefined)
-    minute = date.getMinutes();
-  return (`${year}-${month}-${day}-${hour}:${minute}:00`);
-}
+
 
 app.post('/register_beverage_post', function(request, response){
   var date = new Date();
   var intraId = request.body.intraId;
   var alarmNum = request.body.alarm;
-  //controlTime.setAlarmTable(alarmTable, alarmArr[alarmNum], intraId);
-  var alarmTime = getTimeForm(date, alarmArr[alarmNum].hour, alarmArr[alarmNum].minute);
+  //manageTime.setAlarmTable(alarmTable, alarmArr[alarmNum], intraId);
+  var alarmTime = manageTime.getTimeForm(date, alarmArr[alarmNum].hour, alarmArr[alarmNum].minute);
   moveFile.move2Save(__dirname, pngPath);
   //insertDB(1, intraId, alarmTime, '', '')
   response.redirect(`/register`);
@@ -265,6 +184,13 @@ app.post('/test', (request, response) => {
   pngPath = request.body['pngPath'];
   console.log(pngPath);
   response.send({data: "hihi"});
+});
+
+app.post('/album_delete', (request, response) => {
+  var idx = request.body['idx'];
+  var status = request.body['status'];
+  console.log(idx, status);
+  response.send({data: "hidelete"});
 });
 
 app.listen(3000, function() {

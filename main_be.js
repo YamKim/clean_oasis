@@ -7,11 +7,29 @@ var bodyParser = require('body-parser');
 var sanitizeHtml = require('sanitize-html');
 var compression = require('compression')
 var template = require('./lib/template.js');
-var mysql = require('mysql');
+var mysql = require('mysql2/promise');
+var moveFile = require('./lib/move_file.js');
+var controlTime = require('./lib/control_time.js');
+var pngPath;
 
+var alarmArr;
 var alarmTable = new Array(48);
+for (var i = 0; i < 48; ++i) {
+  alarmTable[i] = new Array();
+};
+
+function StartClock() {
+  var curTime = new Date();
+  if (parseInt(curTime.getMinutes()) % 30 === 0) {
+    var idx = parseInt(curTime.hour) * 2;
+    idx = curTime.minute === "00" ? idx : idx + 1;
+  }
+  timerId = setTimeout(StartClock, 60000);
+}
+StartClock();
  
 app.use(express.static('public'));
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(compression());
 app.get('*', function(request, response, next){
@@ -21,21 +39,19 @@ app.get('*', function(request, response, next){
   });
 });
 
-
-var db = mysql.createConnection({
+var db = mysql.createPool({
   host:'localhost',
-  user:'root',
-  password:'5933',
+  user:'nodejs',
+  password:'1111',
   database:'42_oasis'
 });
-db.connect();
 
 app.get('/', function(request, response) { 
-  var cssPath = "/stylesheets/info_style.css";
-  var body = template.info(cssPath, "/images/info.png");
+  var head = template.category("/stylesheets/category_style.css", 0); 
+  var body = template.info("/images/oasis.jpg");
   //var html = template.html("", body, "");
   var html = template.html(
-    "",
+    head,
     body,
     ""
   );
@@ -43,34 +59,51 @@ app.get('/', function(request, response) {
 });
 
 app.get('/beverage', function(request, response) {
-  var cssPath = "/stylesheets/album_style.css";
-  var body = template.album(pathList.length, pathList, cssPath);
-  var html = template.html(
-    "",
-    body,
-    ""
-  );
-  response.send(html);
+  const dbTest = async () => {
+    try {
+      const connection = await db.getConnection(async conn => conn);
+      try {
+        [rows] = await connection.query(`select * from beverage`);
+        connection.release();
+        var cssPath = "/stylesheets/album_style.css";
+        var body = template.album(rows, cssPath);
+        var html = template.html(
+          "",
+          body,
+          ""
+        );
+        response.send(html);
+        return rows;
+      } catch(err) {
+        console.log('Query Error');
+        connection.release();
+        return false;
+      }
+    } catch(err) {
+      console.log('DB Error');
+      return false;
+    }
+  };
+  dbTest.call();
 });
-
 function getAlarmTime(date) {
   var ret = [];
   var hour = date.getHours();
-  var minutes = date.getMinutes();
-  console.log(hour, minutes);
-  if (minutes >= 30 && minutes < 60)
-    minutes = 30;
+  var minute = date.getMinutes();
+  console.log(hour, minute);
+  if (minute >= 30 && minute < 60)
+    minute = 30;
   else
-    minutes = 0;
-  hour += 2 + Math.floor((minutes + 30) / 60);
+    minute = 0;
+  hour += 2 + Math.floor((minute + 30) / 60);
   hour = (hour) % 24;
-  minutes = (minutes + 30) % 60;
+  minute = (minute + 30) % 60;
   for (var i = 0; i < 8; ++i) {
     tmpHour = hour >= 0 && hour <= 9 ? "0" + hour : hour;
-    tmpMinutes = minutes == 0 ? "0" + minutes : minutes;
-    ret.push({hour:`${tmpHour}`, minutes:`${tmpMinutes}`});
-    minutes += 30
-    if ((minutes = minutes % 60) == 0) {
+    tmpMinute = minute == 0 ? "0" + minute : minute;
+    ret.push({hour:`${tmpHour}`, minute:`${tmpMinute}`});
+    minute += 30
+    if ((minute = minute % 60) == 0) {
       hour += 1;
     }
     hour %= 24;
@@ -82,44 +115,79 @@ app.get('/register', function(request, response) {
   var date = new Date();
   alarmArr = getAlarmTime(date);
   var cssPath = "/stylesheets/register_beverage_style.css";
-  var body = template.register_beverage(cssPath, alarmArr);
-  
+  var head = template.category("/stylesheets/category_style.css", 4); 
+  var body = template.register(cssPath, alarmArr, "beverage");
   var html = template.html(
-    "",
+    head,
     body,
     ""
   );
+  moveFile.move2Trash(__dirname);
   response.send(html);
 })
 
 app.get('/register/snack', function(request, response) {
   var cssPath = "/stylesheets/register_snack_style.css";
-  var body = template.register_snack(cssPath);
+  var head = template.category("/stylesheets/category_style.css", 4); 
+  var body = template.register(cssPath, alarmArr, "snack");
   var html = template.html(
-    "",
-    body,
-    ""
+    head,
+    body
   );
   response.send(html);
 })
 
 app.get('/register/etc', function(request, response) {
   var cssPath = "/stylesheets/register_etc_style.css";
-  var body = template.register_etc(cssPath);
+  var head = template.category("/stylesheets/category_style.css", 4); 
+  var body = template.register(cssPath, alarmArr, "etc");
   var html = template.html(
-    "",
-    body,
-    ""
+    head,
+    body
   );
   response.send(html);
 })
 
-function setAlarmTable(regTime, intraId) {
-  var idx = parseInt(regTime.hour) * 2;
-  idx = parseInt(regTime.minute) === 0 ? idx : idx + 1;
-  console.log(idx);
-  //alarmTable[idx].append(intraId)
-}
+app.get('/capture', function(request, response) {
+  var cssPath = "/stylesheets/register_etc_style.css";
+  var head = template.category("/stylesheets/category_style.css", 4); 
+  var body = `
+  <video id="video" width="320" height="240" autoplay></video>
+    <canvas id="canvas" width="960" height="720"></canvas>
+    <button type="button" id="webcamBtn">캡쳐하기</button>
+    <a id="download" download="myImage.jpg" href="/capture" onclick="download_img(this);">
+      Download to myImage.jpg
+    </a> 
+    <script>
+      download_img = function(el) {
+        // get image URI from canvas object
+        var imageURI = canvas.toDataURL("image/jpg");
+        el.href = imageURI;
+      };
+      if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+          navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
+              var video = document.getElementById('video');
+              video.srcObject = stream;
+              video.play();
+          });
+      }
+
+      var canvas = document.getElementById('canvas');
+      var context = canvas.getContext('2d');
+      var video = document.getElementById('video');
+      document.getElementById("webcamBtn").addEventListener("click",function() {
+          context.drawImage(video,0,0,960,720);
+      });
+    </script>
+    
+  `;
+  var html = template.html(
+    head,
+    body
+  );
+  response.send(html);
+})
+
 
 
 function insertDB(category, intraId, alarmTime, message, notification) {
@@ -142,13 +210,26 @@ function insertDB(category, intraId, alarmTime, message, notification) {
   }
 }
 
+function getTimeForm(date, hour, minute) {
+  console.log(date.getFullYear());
+  var year = date.getFullYear();
+  var month = date.getMonth();
+  var day = date.getDate(); 
+  if (hour == undefined)
+    hour = date.getHours();
+  if (minute == undefined)
+    minute = date.getMinutes();
+  return (`${year}-${month}-${day}-${hour}:${minute}:00`);
+}
+
 app.post('/register_beverage_post', function(request, response){
   var date = new Date();
   var intraId = request.body.intraId;
   var alarmNum = request.body.alarm;
-  setAlarmTable(alarmArr[alarmNum - 1], intraId);
-  var alarmTime = 1900 + date.getYear() + '-' + (1 + date.getMonth()) + '-' + date.getDate() + ' ' + alarmArr[alarmNum - 1].hour + ':' + alarmArr[alarmNum - 1].minutes + ':00'; 
-  insertDB(1, intraId, alarmTime, '', '')
+  controlTime.setAlarmTable(alarmTable, alarmArr[alarmNum], intraId);
+  var alarmTime = getTimeForm(date, alarmArr[alarmNum].hour, alarmArr[alarmNum].minute);
+  moveFile.move2Save(__dirname, pngPath);
+  //insertDB(1, intraId, alarmTime, '', '')
   response.redirect(`/register`);
   response.end();
 });
@@ -157,7 +238,7 @@ app.post('/register_snack_post', function(request, response){
   var intraId = request.body.intraId;
   var message = request.body.message;
   var notification = request.body.notification;
-  insertDB(2, intraId, '', message, notification)
+  //insertDB(2, intraId, '', message, notification)
   response.redirect(`/register/snack`);
   response.end();
 });
@@ -169,6 +250,13 @@ app.post('/register_etc_post', function(request, response){
   insertDB(3, intraId, '', message, notification)
   response.redirect(`/register/etc`);
   response.end();
+});
+
+app.post('/test', (request, response) => {
+  console.log('server received /test');
+  pngPath = request.body['pngPath'];
+  console.log(pngPath);
+  response.send({data: "hihi"});
 });
 
 app.listen(3000, function() {

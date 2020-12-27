@@ -16,6 +16,7 @@
     "express": "^4.17.1",
     "image-js": "^0.31.3",
     "mysql": "^2.18.1",
+    "mysql2": "^2.2.5",
     "nodemailer": "^6.4.17",
     "sanitize-html": "^2.2.0"
   }
