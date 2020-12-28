@@ -7,29 +7,22 @@ var bodyParser = require('body-parser');
 var sanitizeHtml = require('sanitize-html');
 var compression = require('compression')
 var template = require('./lib/template.js');
-var mysql = require('mysql');
+var mysql = require('mysql2/promise');
 var moveFile = require('./lib/move_file.js');
 var manageTime = require('./lib/manage_time.js');
 var pngPath;
 
 var alarmArr;
+// manageTime.alarmTable = new Array(48);
+// for (var i = 0; i < 48; i++) {
+//   manageTime.alarmTable[i] = new Array();
+// }
+
 var alarmTable = new Array(48);
 for (var i = 0; i < 48; ++i) {
   alarmTable[i] = new Array();
 };
 
-/*
-function sendAlarm() {
-  var curTime = new Date();
-  if (parseInt(curTime.getMinutes()) % 30 === 0) {
-      console.log("====================303030===================");
-      var idx = parseInt(curTime.hour) * 2;
-      idx = curTime.minute === "00" ? idx : idx + 1;
-  }
-  console.log("hihi");
-  timerId = setTimeout(sendAlarm, 6000);
-}
-*/
 manageTime.sendAlarm();
  
 app.use(express.static('public'));
@@ -44,22 +37,13 @@ app.get('*', function(request, response, next){
 });
 
 pathList = [];
-/*
-var db = mysql.createConnection({
+
+var db = mysql.createPool({
   host:'localhost',
-  user:'root',
-  password:'5933',
+  user:'nodejs',
+  password:'1111',
   database:'42_oasis'
 });
-db.connect();
-
-
-db.query(`select * from beverage`, function(error, topics){
-  if (error) console.log(error);
-  for (var i = 0; i < topics.length; i++)
-    pathList.push(topics[i]);
-}); 
-*/
 
 app.get('/', function(request, response) { 
   var head = template.category("/stylesheets/category_style.css", 0); 
@@ -73,21 +57,33 @@ app.get('/', function(request, response) {
   response.send(html);
 });
 
-pathList.push("20201127183323");
-pathList.push("20201127183744");
-pathList.push("20201127184010");
-pathList.push("20201127184022");
-// 삭제 버튼을 누를 때, status를 변경하여 숨김 status인 애는 띄우지 않기.
 app.get('/beverage', function(request, response) {
-  var cssPath = "/stylesheets/album_style.css";
-  var head = template.category("/stylesheets/category_style.css", 1); 
-  var body = template.album(pathList, cssPath);
-  var html = template.html(
-    head,
-    body,
-    ""
-  );
-  response.send(html);
+  const dbTest = async () => {
+    try {
+      const connection = await db.getConnection(async conn => conn);
+      try {
+        [rows] = await connection.query(`select * from beverage where status = 1`);
+        connection.release();
+        var head = template.category("/stylesheets/category_style.css", 1);
+        var body = template.album(rows, "/stylesheets/album_style.css");
+        var html = template.html(
+          head,
+          body,
+          ""
+        );
+        response.send(html);
+        return rows;
+      } catch(err) { 
+        console.log('Query Error');
+        connection.release();
+        return false;
+      }
+    } catch(err) {
+      console.log('DB Error');
+      return false;
+    }
+  };
+  dbTest.call();
 });
 
 app.get('/register', function(request, response) {
@@ -129,9 +125,10 @@ app.get('/register/etc', function(request, response) {
 
 function insertDB(category, intraId, alarmTime, message, notification) {
   var date = new Date();
-  var currentTime = 1900 + date.getYear() + '-' + (1 + date.getMonth()) + '-' + date.getDate() + ' ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds(); 
+  var tmp = path.basename(pngPath, '.png');
+  tmp = parseInt(tmp);
   if (category == 1) {
-    db.query(`insert into beverage(intra_id, register_time, alarm_time) values(?, ?, ?)`, [intraId, currentTime, alarmTime], function(error){
+    db.query(`insert into beverage(intra_id, register_time, alarm_time) values(?, ?, ?)`, [intraId, tmp, alarmTime], function(error){
       if (error) console.log(error);
     });
   }
@@ -147,16 +144,16 @@ function insertDB(category, intraId, alarmTime, message, notification) {
   }
 }
 
-
-
 app.post('/register_beverage_post', function(request, response){
   var date = new Date();
   var intraId = request.body.intraId;
   var alarmNum = request.body.alarm;
-  //manageTime.setAlarmTable(alarmTable, alarmArr[alarmNum], intraId);
+  // manageTime.setAlarmTable(manageTime.alarmTable, alarmArr[alarmNum], intraId);
+  manageTime.setAlarmTable(alarmTable, alarmArr[alarmNum], intraId);
+  console.log(alarmTable);
   var alarmTime = manageTime.getTimeForm(date, alarmArr[alarmNum].hour, alarmArr[alarmNum].minute);
   moveFile.move2Save(__dirname, pngPath);
-  //insertDB(1, intraId, alarmTime, '', '')
+  insertDB(1, intraId, alarmTime, '', '');
   response.redirect(`/register`);
   response.end();
 });
@@ -182,7 +179,7 @@ app.post('/register_etc_post', function(request, response){
 app.post('/test', (request, response) => {
   console.log('server received /test');
   pngPath = request.body['pngPath'];
-  console.log(pngPath);
+  // console.log(pngPath);
   response.send({data: "hihi"});
 });
 
@@ -190,7 +187,11 @@ app.post('/album_delete', (request, response) => {
   var idx = request.body['idx'];
   var status = request.body['status'];
   console.log(idx, status);
-  response.send({data: "hidelete"});
+  db.query(`update beverage set status = 2 where id = ?`, [idx]);
+  // response.send({data: "hidelete"});
+  response.send(`/register`);
+  // response.redirect(`/register`);
+  // response.end();
 });
 
 app.listen(3000, function() {
